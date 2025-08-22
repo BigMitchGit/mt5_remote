@@ -1,6 +1,7 @@
 from setuptools import find_packages, setup
 setup(
     name='mt5linux',
+    python_requires='>=3.11',
     packages=find_packages(include=['mt5linux']),
     version='0.2.0',
     description='MetaTrader5 for linux users',

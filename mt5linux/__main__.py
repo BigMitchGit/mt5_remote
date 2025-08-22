@@ -135,42 +135,73 @@ class ClassicServer(cli.Application):
 if __name__ == "__main__":
     ClassicServer.run()
 '''
-    with open(fname,'w') as fp:
+    with open(fname, "w") as fp:
         fp.write(code)
+
 
 def main():
     from rpyc.utils.classic import DEFAULT_SERVER_PORT, DEFAULT_SERVER_SSL_PORT
     import os
     from subprocess import Popen
     import argparse
-    parser = argparse.ArgumentParser(description='Create Server.')
-    parser.add_argument('python', type=str, help='Python that will run the server (have to be a Windows version!)')
-    parser.add_argument('--host', type=str, default='localhost', help='The host to connect to. The default is localhost')
-    parser.add_argument('-p','--port', type=int, default=DEFAULT_SERVER_PORT, help=f'The TCP listener port (default = {DEFAULT_SERVER_PORT!r}, default for SSL = {DEFAULT_SERVER_SSL_PORT!r})')
-    parser.add_argument('-w','--wine', type=str, default='wine', help='Command line to call wine program (default = wine)')
-    parser.add_argument('-s','--server', type=str, default='/tmp/mt5linux', help='Path where the server will be build and run (defaul = /tmp/mt5linux)')
+
+    parser = argparse.ArgumentParser(description="Create Server.")
+    parser.add_argument(
+        "python",
+        type=str,
+        help="Python that will run the server (have to be a Windows version!)",
+    )
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="localhost",
+        help="The host to connect to. The default is localhost",
+    )
+    parser.add_argument(
+        "-p",
+        "--port",
+        type=int,
+        default=DEFAULT_SERVER_PORT,
+        help=f"The TCP listener port (default = {DEFAULT_SERVER_PORT!r}, default for SSL = {DEFAULT_SERVER_SSL_PORT!r})",
+    )
+    parser.add_argument(
+        "-w",
+        "--wine",
+        type=str,
+        default="wine",
+        help="Command line to call wine program (default = wine)",
+    )
+    parser.add_argument(
+        "-s",
+        "--server",
+        type=str,
+        default="/tmp/mt5linux",
+        help="Path where the server will be build and run (default = /tmp/mt5linux)",
+    )
     args = parser.parse_args()
     #
-    wine_cmd=args.wine
-    win_python_path=args.python
-    server_dir=args.server
-    server_code='server.py'
-    port=args.port
-    host=args.host
+    wine_cmd = args.wine
+    win_python_path = args.python
+    server_dir = args.server
+    server_code = "server.py"
+    port = args.port
+    host = args.host
     #
-    Popen(['mkdir','-p',server_dir],shell=True).wait()
-    __generate_server_classic(os.path.join(server_dir,server_code))
-    Popen([
+    Popen(["mkdir", "-p", server_dir], shell=True).wait()
+    __generate_server_classic(os.path.join(server_dir, server_code))
+    Popen(
+        [
             wine_cmd,
             os.path.join(win_python_path),
-            os.path.join(server_dir,server_code),
-            '--host',
+            os.path.join(server_dir, server_code),
+            "--host",
             host,
-            '-p',
+            "-p",
             str(port),
-        ],shell=True,
+        ],
+        shell=True,
     ).wait()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
