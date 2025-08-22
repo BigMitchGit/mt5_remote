@@ -168,8 +168,8 @@ def main():
         "-w",
         "--wine",
         type=str,
-        default="wine",
-        help="Command line to call wine program (default = wine)",
+        default=None,
+        help="Optional command to call wine (omit to assume native Windows python)",
     )
     parser.add_argument(
         "-s",
@@ -187,20 +187,22 @@ def main():
     port = args.port
     host = args.host
     #
-    Popen(["mkdir", "-p", server_dir], shell=True).wait()
+    # create server directory if needed
+    os.makedirs(server_dir, exist_ok=True)
     __generate_server_classic(os.path.join(server_dir, server_code))
-    Popen(
-        [
-            wine_cmd,
-            os.path.join(win_python_path),
-            os.path.join(server_dir, server_code),
-            "--host",
-            host,
-            "-p",
-            str(port),
-        ],
-        shell=True,
-    ).wait()
+    # build command; include wine only when explicitly provided
+    cmd = []
+    if wine_cmd:
+        cmd.append(wine_cmd)
+    cmd.extend([
+        os.path.join(win_python_path),
+        os.path.join(server_dir, server_code),
+        "--host",
+        host,
+        "-p",
+        str(port),
+    ])
+    Popen(cmd, shell=False).wait()
 
 
 if __name__ == "__main__":
