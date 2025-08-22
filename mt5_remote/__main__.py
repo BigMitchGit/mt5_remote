@@ -175,8 +175,8 @@ def main():
         "-s",
         "--server",
         type=str,
-        default="/tmp/mt5linux",
-        help="Path where the server will be build and run (default = /tmp/mt5linux)",
+        default="/tmp/mt5_remote",
+        help="Path where the server will be build and run (default = /tmp/mt5_remote)",
     )
     args = parser.parse_args()
     #

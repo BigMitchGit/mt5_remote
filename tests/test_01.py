@@ -17,7 +17,7 @@ class _FakeConn:
         return None
 
 
-# Create fake modules and register them so importing `mt5linux` will pick them up
+# Create fake modules and register them so importing `mt5_remote` will pick them up
 _fake_rpyc = types.ModuleType("rpyc")
 _fake_rpyc_classic = types.ModuleType("rpyc.classic")
 
@@ -42,8 +42,8 @@ def test_smoke():
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
     # Import the package after faking rpyc
-    mt5linux_mod = importlib.import_module("mt5linux")
-    MetaTrader5 = mt5linux_mod.MetaTrader5
+    mt5_remote_mod = importlib.import_module("mt5_remote")
+    MetaTrader5 = mt5_remote_mod.MetaTrader5
 
     mt5 = MetaTrader5(port=1235)
     mt5.initialize()

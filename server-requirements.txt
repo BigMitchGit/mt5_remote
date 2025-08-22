@@ -1,0 +1,2 @@
+metatrader5==5.0.5200
+pywin32==311

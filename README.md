@@ -1,6 +1,6 @@
-# mt5-remote — Remote MetaTrader 5 access
+# mt5_remote — Remote MetaTrader 5 access
 
-mt5-remote provides cross-platform remote execution and access to MetaTrader 5 terminals. It lets an orchestrator (Linux or Windows) send MT5 operations to a remote Python process running MetaTrader5 on a Windows environment (native Windows or via Wine).
+mt5_remote provides cross-platform remote execution and access to MetaTrader 5 terminals. It lets an orchestrator (Linux or Windows) send MT5 operations to a remote Python process running MetaTrader5 on a Windows environment (native Windows or via Wine).
 
 This project repurposes the original mt5linux package to focus on a client/server remote architecture for sending MT5 commands to a remote terminal.
 
@@ -34,7 +34,7 @@ pip install -e .
 2. On the remote machine (Windows/Wine), start the server process that exposes MT5 operations. Example (adjust the module name and path to your Windows python executable as needed):
 
 ```
-python -m mt5-remote <path/to/python.exe>
+python -m mt5_remote <path/to/python.exe>
 ```
 
 3. On the orchestrator (client) machine, import the client API and use it much like the regular MetaTrader5 package. Example usage:
@@ -57,7 +57,7 @@ mt5.shutdown()
 ```
 
 Notes:
-- Command-line options for the server (host, port, exe path, verbosity) are available; run `python -m mt5-remote --help` on the remote machine.
+- Command-line options for the server (host, port, exe path, verbosity) are available; run `python -m mt5_remote --help` on the remote machine.
 
 ## Credits
 
