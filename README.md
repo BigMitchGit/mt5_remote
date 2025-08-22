@@ -1,63 +1,94 @@
 # mt5_remote — Remote MetaTrader 5 access
 
-mt5_remote provides cross-platform remote execution and access to MetaTrader 5 terminals. It lets an orchestrator (Linux or Windows) send MT5 operations to a remote Python process running MetaTrader5 on a Windows environment (native Windows or via Wine).
+mt5_remote lets you control MetaTrader 5 from any machine by connecting to a remote Windows Python process that runs MT5. Your client script (Linux, macOS, or Windows) sends commands to a server running MetaTrader5 on Windows (native Windows or via Wine).
 
-This project repurposes the original mt5linux package to focus on a client/server remote architecture for sending MT5 commands to a remote terminal.
+This project builds on the original mt5linux package, maintaining compatibility with its Linux support while adding generalized remote access. Unlike the original mt5linux, this version works with modern Python versions.
 
 ## Purpose
 
-- Allow scripts on one machine (the client/orchestrator) to control MetaTrader 5 running on a remote machine.
-- Support Windows-native MT5 Python integration as the remote endpoint; the orchestrator may run on Linux or Windows.
-- Keep the transport minimal and secure for closed networks (authentication and encryption improvements may be added later).
+- Run MT5 trading scripts from any machine by connecting to a remote MT5 server
+- Keep your trading logic on Linux/macOS while MT5 runs on Windows (locally via Wine/VM or on a remote Windows machine)
+- Simple client/server setup that generally allows you to keep your trading logic and MT5 terminals separate
 
 ## Install
 
-1. Ensure you have a Windows Python that can run the MetaTrader5 package. On Linux you can use Wine + a Windows Python install.
+1. Set up a Windows Python environment that can run the MetaTrader5 package. This can be:
+   - Wine + Windows Python on Linux
+   - Native Windows OS + Python
+   - Windows VM with Python
 
-2. Install the MetaTrader5 Python package into the Windows Python environment:
+2. Clone this repository and install from source:
 
-```
-pip install MetaTrader5
-```
+   **On both client and server machines:**
+   ```bash
+   # Clone the repository
+   git clone <repo-url>
+   cd mt5linux
+   
+   # Create virtual environment (recommended: uv)
+   uv venv
+   source .venv/bin/activate  # Linux/Mac
+   # or: .venv\Scripts\activate  # Windows
+   
+   # Alternative: standard venv
+   # python -m venv .venv && source .venv/bin/activate
+   
+   # Install base requirements and package
+   pip install -r requirements.txt
+   pip install -e .
+   ```
 
-3. Install project dependencies and this package (on the side(s) where you need the client/server code):
+   **Additionally on the remote server only:**
+   ```bash
+   # In the activated server venv
+   pip install -r server-requirements.txt
+   ```
 
-```
-pip install -r requirements.txt
-pip install -e .
-```
+   **Note:** Always activate the virtual environment before running client/server commands. `requirements.txt` contains base requirements for both client and server. `server-requirements.txt` adds MT5-specific dependencies only needed on the server.
 
 ## How to use
 
-1. Start MetaTrader 5 on the machine that will act as the remote endpoint (Windows or Wine).
+1. Start MetaTrader 5 on the machine with Windows Python (native Windows, Wine, or VM).
 
-2. On the remote machine (Windows/Wine), start the server process that exposes MT5 operations. Example (adjust the module name and path to your Windows python executable as needed):
+2. Start the server that connects to MT5:
 
+```bash
+# Make sure server venv is activated first
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+python -m mt5_remote <path/to/windows/python.exe>
 ```
-python -m mt5_remote <path/to/python.exe>
-```
 
-3. On the orchestrator (client) machine, import the client API and use it much like the regular MetaTrader5 package. Example usage:
+The `<path/to/windows/python.exe>` parameter is the path to your Windows Python interpreter **inside the virtual environment** where you installed the server requirements. Examples:
+- Native Windows: `.venv\Scripts\python.exe`
+- Wine on Linux: `--wine wine .venv/Scripts/python.exe` (note the `--wine` flag)
+- Windows VM: `.venv/Scripts/python.exe` (or full path to venv within VM)
+
+**Note:** 
+- Use the venv's python.exe (not system Python) unless you installed packages globally
+- For Wine, you must use the `--wine` argument to specify the Wine command
+- Relative paths work fine if you're in the project directory
+
+3. From your client machine (can be the same machine for localhost usage), connect and run your trading logic:
 
 ```python
-# import the remote client API
 from mt5_remote import MetaTrader5
 
-# connect to the remote MT5 server
-mt5 = MetaTrader5(
-    # host='localhost' (default)
-    # port=18812           (default)
-)
+# Connect to MT5 server (defaults: localhost:18812)
+mt5 = MetaTrader5()
 
 mt5.initialize()
 info = mt5.terminal_info()
-rates = mt5.copy_rates_from_pos('GOOG', mt5.TIMEFRAME_M1, 0, 1000)
-# ... perform operations remotely
+rates = mt5.copy_rates_from_pos('EURUSD', mt5.TIMEFRAME_M1, 0, 1000)
 mt5.shutdown()
 ```
 
-Notes:
-- Command-line options for the server (host, port, exe path, verbosity) are available; run `python -m mt5_remote --help` on the remote machine.
+**Common Usage Scenarios:**
+- **Linux/macOS development with Wine:** Run the server via Wine locally, develop your trading logic in native Linux/macOS Python
+- **Linux/macOS with Windows VM:** Run the server in a Windows VM, connect from Linux/macOS host
+- **Remote Windows server:** Run the server on a separate Windows machine, connect from any client
+
+**Server Options:**
+Run `python -m mt5_remote --help` for host, port, and other configuration options.
 
 ## Credits
 
