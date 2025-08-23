@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "build"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mt5_remote"
+version = "1.0.0"
+description = "MetaTrader5 with remote access using a client/server architecture"
+readme = { file = "README.md", content-type = "text/markdown" }
+authors = [{ name = "BigMitchGit" }]
+license = "MIT"
+requires-python = ">=3.11"
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+
+  "Operating System :: OS Independent",
+]
+
+dependencies = [
+  "numpy==2.3.2",
+  "plumbum==1.9.0",
+  "rpyc==6.0.2",
+  'metatrader5==5.0.5200; sys_platform == "win32"',
+  'pywin32==311; sys_platform == "win32"',
+]
+
+[project.optional-dependencies]
+server = [
+  "metatrader5==5.0.5200",
+  "pywin32==311",
+]
+
+[project.urls]
+Homepage = "https://github.com/bigmitchgit/mt5_remote"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mt5_remote", "mt5_remote.*", "mt5remote"]
