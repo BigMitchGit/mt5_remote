@@ -12,39 +12,59 @@ This project builds on the original mt5linux package, maintaining compatibility 
 
 ## Install
 
-1. Set up a Windows Python environment that can run the MetaTrader5 package. This can be:
-   - Wine + Windows Python on Linux
-   - Native Windows OS + Python
-   - Windows VM with Python
+Option A — install from PyPI (recommended)
 
-2. Clone this repository and install from source:
+- Preferred (using the `uv` virtual environment helper):
+```bash
+# create and activate a uv environment
+uv venv
+source .venv/bin/activate  # Linux/Mac
+# or: .venv\Scripts\activate  # Windows
+uv pip install mt5-remote
+```
 
-   **On both client and server machines:**
-   ```bash
-   # Clone the repository
-   git clone <repo-url>
-   cd mt5linux
-   
-   # Create virtual environment (recommended: uv)
-   uv venv
-   source .venv/bin/activate  # Linux/Mac
-   # or: .venv\Scripts\activate  # Windows
-   
-   # Alternative: standard venv
-   # python -m venv .venv && source .venv/bin/activate
-   
-   # Install base requirements and package
-   pip install -r requirements.txt
-   pip install -e .
-   ```
+- Or, if you don't use `uv`, use a standard venv and pip:
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# or: .venv\Scripts\activate  # Windows
+pip install mt5-remote
+```
 
-   **Additionally on the remote server only:**
-   ```bash
-   # In the activated server venv
-   pip install -r server-requirements.txt
-   ```
+Important: the package name on PyPI is `mt5-remote` but you must import it in Python with an underscore:
+```python
+import mt5_remote  # use underscore
+from mt5_remote import MetaTrader5
+```
 
-   **Note:** Always activate the virtual environment before running client/server commands. `requirements.txt` contains base requirements for both client and server. `server-requirements.txt` adds MT5-specific dependencies only needed on the server.
+Option B — install from source
+
+**On both client and server machines:**
+```bash
+# Clone the repository
+git clone <repo-url>
+cd mt5_remote
+
+# Create virtual environment (recommended: uv)
+uv venv
+source .venv/bin/activate  # Linux/Mac
+# or: .venv\Scripts\activate  # Windows
+
+# Alternative: standard venv
+# python -m venv .venv && source .venv/bin/activate
+
+# Install base requirements and package (editable install for development)
+pip install -r requirements.txt
+pip install -e .
+```
+
+**Additionally on the remote server only:**
+```bash
+# In the activated server venv
+pip install -r server-requirements.txt
+```
+
+**Note:** Always activate the virtual environment before running client/server commands. `requirements.txt` contains base requirements for both client and server. `server-requirements.txt` adds MT5-specific dependencies only needed on the server.
 
 ## How to use
 
@@ -89,6 +109,17 @@ mt5.shutdown()
 
 **Server Options:**
 Run `python -m mt5_remote --help` for host, port, and other configuration options.
+
+## MT5 configuration notes
+
+- Enable Algorithmic trading in the MT5 GUI: Tools -> Options -> Expert Advisors and check "Allow algorithmic trading" (or similar on your MT5 build).
+
+- You can also enable these settings programmatically by editing the MT5 configuration files (for example `terminal.ini` or `common.ini` in the MT5 data/config folders) to enable Expert Advisors / automated trading. Exact keys may differ between MT5 builds; prefer using the GUI unless you know the correct ini keys for your installation.
+
+## Broker discovery note
+
+- The MT5 terminal must have discovered your broker server before remote operations can succeed. If the terminal hasn't discovered the broker it will fail to connect to market data or accounts. In the MT5 GUI open "Open an Account" and search for your broker; once your broker appears in the list, mt5_remote should be able to use the terminal to access market data and trading services.
+
 
 ## Credits
 
