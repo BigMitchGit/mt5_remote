@@ -460,8 +460,30 @@ class MetaTrader5:
 
             `shutdown`, `terminal_info`, `version`
         """
-        code = f"mt5.initialize(*{args},**{kwargs})"
-        return self.__conn.eval(code)
+        # If no explicit path is provided by the caller, allow the server
+        # process to supply a default from environment variables
+        # (MT5_TERMINAL_PATH or MT5_PATH), which can be set via the CLI
+        # argument `--mt5path` when starting the server.
+        code = (
+            "import os\n"
+            "import MetaTrader5 as mt5\n"
+            f"_a = {args}\n"
+            f"_k = {kwargs}\n"
+            "if _a or ('path' in _k):\n"
+            "    __ret = mt5.initialize(*_a, **_k)\n"
+            "else:\n"
+            "    _p = os.environ.get('MT5_TERMINAL_PATH') or os.environ.get('MT5_PATH')\n"
+            "    if _p is not None and _p != '':\n"
+            "        try:\n"
+            "            __ret = mt5.initialize(_p, **_k)\n"
+            "        except TypeError:\n"
+            "            # Fallback for older MetaTrader5 that may not accept **_k with path\n"
+            "            __ret = mt5.initialize(_p)\n"
+            "    else:\n"
+            "        __ret = mt5.initialize(**_k)\n"
+        )
+        self.__conn.execute(code)
+        return self.__conn.eval("__ret")
 
     def login(self, *args, **kwargs):
         r"""

@@ -250,6 +250,16 @@ def main():
             "Path where the server will be build and run " "(default = /tmp/mt5_remote)"
         ),
     )
+    parser.add_argument(
+        "--mt5path",
+        type=str,
+        default=None,
+        help=(
+            "Optional path to the MetaTrader 5 terminal executable (terminal64.exe). "
+            "If provided, the server process will use this path by default when "
+            "mt5.initialize() is called without an explicit path."
+        ),
+    )
     args = parser.parse_args()
     #
     wine_cmd = args.wine
@@ -276,7 +286,13 @@ def main():
             str(port),
         ]
     )
-    Popen(cmd, shell=False).wait()
+    # allow passing a preferred MT5 terminal path to the server via env
+    env = os.environ.copy()
+    if args.mt5path:
+        # Use both names for flexibility
+        env["MT5_TERMINAL_PATH"] = args.mt5path
+        env["MT5_PATH"] = args.mt5path
+    Popen(cmd, shell=False, env=env).wait()
 
 
 if __name__ == "__main__":

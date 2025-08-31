@@ -75,10 +75,15 @@ pip install -r server-requirements.txt
 ```bash
 # Make sure server venv is activated first
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-python -m mt5_remote <path/to/windows/python.exe>
+# Optionally, specify which MT5 terminal executable to use with --mt5path
+python -m mt5_remote <path/to/windows/python.exe> --mt5path "C:\\Program Files\\MetaTrader 5\\terminal64.exe"
 ```
 
-The `<path/to/windows/python.exe>` parameter is the path to your Windows Python interpreter **inside the virtual environment** where you installed the server requirements. Examples:
+The `<path/to/windows/python.exe>` parameter is the path to your Windows Python interpreter **inside the virtual environment** where you installed the server requirements.
+
+If `--mt5path` is provided, the server sets `MT5_TERMINAL_PATH` (and `MT5_PATH`) in its environment. When your client later calls `mt5.initialize()` without an explicit path, the server will default to this MT5 terminal executable path.
+
+Examples:
 - Native Windows: `.venv\Scripts\python.exe`
 - Wine on Linux: `--wine wine .venv/Scripts/python.exe` (note the `--wine` flag)
 - Windows VM: `.venv/Scripts/python.exe` (or full path to venv within VM)
