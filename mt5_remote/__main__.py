@@ -260,6 +260,14 @@ def main():
             "mt5.initialize() is called without an explicit path."
         ),
     )
+    parser.add_argument(
+        "--portable",
+        action="store_true",
+        help=(
+            "Default to launching the MT5 terminal in portable mode when the client "
+            "calls mt5.initialize() without specifying 'portable='."
+        ),
+    )
     args = parser.parse_args()
     #
     wine_cmd = args.wine
@@ -292,6 +300,8 @@ def main():
         # Use both names for flexibility
         env["MT5_TERMINAL_PATH"] = args.mt5path
         env["MT5_PATH"] = args.mt5path
+    if args.portable:
+        env["MT5_PORTABLE"] = "1"
     Popen(cmd, shell=False, env=env).wait()
 
 

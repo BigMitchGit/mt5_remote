@@ -76,12 +76,19 @@ pip install -r server-requirements.txt
 # Make sure server venv is activated first
 source .venv/bin/activate  # or .venv\Scripts\activate on Windows
 # Optionally, specify which MT5 terminal executable to use with --mt5path
-python -m mt5_remote <path/to/windows/python.exe> --mt5path "C:\\Program Files\\MetaTrader 5\\terminal64.exe"
+# and default to portable mode with --portable (isolates data per install)
+python -m mt5_remote <path/to/windows/python.exe> \
+  --mt5path "C:\\Program Files\\MetaTrader 5\\terminal64.exe" \
+  --portable
 ```
 
 The `<path/to/windows/python.exe>` parameter is the path to your Windows Python interpreter **inside the virtual environment** where you installed the server requirements.
 
 If `--mt5path` is provided, the server sets `MT5_TERMINAL_PATH` (and `MT5_PATH`) in its environment. When your client later calls `mt5.initialize()` without an explicit path, the server will default to this MT5 terminal executable path.
+
+If `--portable` is provided, the server sets `MT5_PORTABLE=1` in its environment. When your client calls `mt5.initialize()` without `portable=` specified, the server defaults to launching the terminal in portable mode.
+
+Portable mode keeps the MT5 data folder inside the terminal installation directory, which makes it easy to run multiple isolated terminals on the same machine (each in its own folder).
 
 Examples:
 - Native Windows: `.venv\Scripts\python.exe`
@@ -114,6 +121,13 @@ mt5.shutdown()
 
 **Server Options:**
 Run `python -m mt5_remote --help` for host, port, and other configuration options.
+
+To run multiple MT5 terminals on one machine, start multiple servers with different `--port` values and distinct MT5 installation folders (ideally with `--portable`). Example:
+
+```bash
+python -m mt5_remote .venv\Scripts\python.exe --mt5path "C:\\MT5A\\terminal64.exe" --portable -p 18812
+python -m mt5_remote .venv\Scripts\python.exe --mt5path "C:\\MT5B\\terminal64.exe" --portable -p 18813
+```
 
 ## MT5 configuration notes
 
