@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mt5_remote"
-version = "1.0.4"
+version = "1.0.5"
 description = "MetaTrader5 with remote access using a client/server architecture"
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [{ name = "BigMitchGit" }]

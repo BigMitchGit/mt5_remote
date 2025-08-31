@@ -216,6 +216,7 @@ def main():
     parser.add_argument("-p", "--port", type=int, default=DEFAULT_SERVER_PORT, help="TCP port")
     args = parser.parse_args()
 
+    print(f"mt5_remote server listening on {args.host}:{args.port}", flush=True)
     srv = ThreadedServer(
         SlaveService,
         hostname=args.host,
