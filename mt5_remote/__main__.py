@@ -202,6 +202,36 @@ if __name__ == "__main__":
         fp.write(code)
 
 
+def __generate_simple_server(fname):
+    code = """#!/usr/bin/env python
+import argparse
+from rpyc.utils.server import ThreadedServer
+from rpyc.utils.classic import DEFAULT_SERVER_PORT
+from rpyc.core import SlaveService
+
+
+def main():
+    parser = argparse.ArgumentParser(description="mt5_remote rpyc server")
+    parser.add_argument("--host", default="127.0.0.1", help="Host/IP to bind")
+    parser.add_argument("-p", "--port", type=int, default=DEFAULT_SERVER_PORT, help="TCP port")
+    args = parser.parse_args()
+
+    srv = ThreadedServer(
+        SlaveService,
+        hostname=args.host,
+        port=args.port,
+        reuse_addr=True,
+    )
+    srv.start()
+
+
+if __name__ == "__main__":
+    main()
+"""
+    with open(fname, "w", newline="\n") as fp:
+        fp.write(code)
+
+
 def main():
     import argparse
     import os
@@ -279,7 +309,8 @@ def main():
     #
     # create server directory if needed
     os.makedirs(server_dir, exist_ok=True)
-    __generate_server_classic(os.path.join(server_dir, server_code))
+    # Generate a minimal, robust server script to avoid indentation issues
+    __generate_simple_server(os.path.join(server_dir, server_code))
     # build command; include wine only when explicitly provided
     cmd = []
     if wine_cmd:
